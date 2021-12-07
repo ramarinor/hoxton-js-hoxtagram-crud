@@ -48,7 +48,65 @@ function deleteCommentFromServer(id) {
 	});
 }
 
-// RENDER FUNCTIONS
+function createImageOnServer(title, url) {
+	return fetch("http://localhost:3000/images", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({
+			title: title,
+			image: url,
+			comments: [],
+			likes: 0
+		})
+	}).then(function (resp) {
+		return resp.json();
+	});
+}
+
+function renderForm() {
+	imageContainerEl.innerHTML = "";
+	const imageForm = document.createElement("form");
+	imageForm.setAttribute("class", "comment-form image-card");
+
+	const titleEl = document.createElement("h2");
+	titleEl.setAttribute("class", "title");
+	titleEl.textContent = "New Post";
+
+	const imageTitleInput = document.createElement("input");
+	imageTitleInput.setAttribute("class", "comment-input");
+	imageTitleInput.setAttribute("type", "text");
+	imageTitleInput.setAttribute("name", "title");
+	imageTitleInput.setAttribute("id", "title");
+	imageTitleInput.setAttribute("placeholder", "Add a title...");
+
+	const imageUrlInput = document.createElement("input");
+	imageUrlInput.setAttribute("class", "comment-input");
+	imageUrlInput.setAttribute("type", "url");
+	imageUrlInput.setAttribute("name", "image");
+	imageUrlInput.setAttribute("id", "image");
+	imageUrlInput.setAttribute("placeholder", "Add an image url...");
+
+	const addImageBtn = document.createElement("button");
+	addImageBtn.setAttribute("class", "comment-button");
+	addImageBtn.setAttribute("type", "submit");
+	addImageBtn.textContent = "Post";
+
+	imageForm.addEventListener("submit", (event) => {
+		event.preventDefault();
+		const title = imageForm.title.value;
+		const url = imageForm.image.value;
+		createImageOnServer(title, url).then(function (imageFromServer) {
+			state.images.push(imageFromServer);
+			render();
+		});
+	});
+
+	imageForm.append(titleEl, imageTitleInput, imageUrlInput, addImageBtn);
+	imageContainerEl.append(imageForm);
+}
+
 function renderImage(image) {
 	const articleEl = document.createElement("article");
 	articleEl.setAttribute("class", "image-card");
@@ -97,7 +155,6 @@ function renderImage(image) {
 
 	const commentsList = document.createElement("ul");
 	commentsList.setAttribute("class", "comments");
-
 	for (const comment of image.comments) {
 		const commentLi = document.createElement("li");
 		commentLi.textContent = comment.content;
@@ -147,13 +204,13 @@ function renderImage(image) {
 }
 
 function renderImages() {
-	imageContainerEl.innerHTML = "";
 	for (const image of state.images) {
 		renderImage(image);
 	}
 }
 
 function render() {
+	renderForm();
 	renderImages();
 }
 
