@@ -117,7 +117,10 @@ img {
 
 .comments li {
 	margin: 2px 0;
+	padding: 0.5rem;
 	letter-spacing: 0.2px;
+	display: flex;
+	justify-content: space-between;
 }
 
 .comment-form {

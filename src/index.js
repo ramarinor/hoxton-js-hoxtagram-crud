@@ -42,6 +42,11 @@ function deleteImageFromServer(id) {
 		method: "DELETE"
 	});
 }
+function deleteCommentFromServer(id) {
+	return fetch(`http://localhost:3000/comments/${id}`, {
+		method: "DELETE"
+	});
+}
 
 // RENDER FUNCTIONS
 function renderImage(image) {
@@ -96,6 +101,19 @@ function renderImage(image) {
 	for (const comment of image.comments) {
 		const commentLi = document.createElement("li");
 		commentLi.textContent = comment.content;
+
+		const deleteCommentBtn = document.createElement("button");
+		deleteCommentBtn.setAttribute("class", "delete-button");
+		deleteCommentBtn.textContent = "delete";
+
+		commentLi.append(deleteCommentBtn);
+
+		deleteCommentBtn.addEventListener("click", () => {
+			image.comments = image.comments.filter((target) => target !== comment);
+			deleteCommentFromServer(comment.id);
+			render();
+		});
+
 		commentsList.append(commentLi);
 	}
 
