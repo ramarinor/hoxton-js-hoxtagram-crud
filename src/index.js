@@ -37,10 +37,31 @@ function createCommentOnServer(imageId, content) {
 	});
 }
 
+function deleteImageFromServer(id) {
+	return fetch(`http://localhost:3000/images/${id}`, {
+		method: "DELETE"
+	});
+}
+
 // RENDER FUNCTIONS
 function renderImage(image) {
 	const articleEl = document.createElement("article");
 	articleEl.setAttribute("class", "image-card");
+
+	const deleteImageBtnContainer = document.createElement("div");
+	deleteImageBtnContainer.setAttribute("class", "delete-section");
+
+	const deleteImageBtn = document.createElement("button");
+	deleteImageBtn.setAttribute("class", "delete-button");
+	deleteImageBtn.textContent = "delete";
+
+	deleteImageBtn.addEventListener("click", () => {
+		state.images = state.images.filter((target) => target !== image);
+		deleteImageFromServer(image.id);
+		render();
+	});
+
+	deleteImageBtnContainer.append(deleteImageBtn);
 
 	const titleEl = document.createElement("h2");
 	titleEl.setAttribute("class", "title");
@@ -100,11 +121,10 @@ function renderImage(image) {
 		createCommentOnServer(image.id, content).then(function (commentFromServer) {
 			image.comments.push(commentFromServer);
 			render();
-			commentForm.reset();
 		});
 	});
 
-	articleEl.append(titleEl, imgEl, buttonsDiv, commentsList, commentForm);
+	articleEl.append(deleteImageBtnContainer, titleEl, imgEl, buttonsDiv, commentsList, commentForm);
 	imageContainerEl.append(articleEl);
 }
 
