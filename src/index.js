@@ -10,6 +10,18 @@ function getImages() {
 	return fetch("http://localhost:3000/images").then((resp) => resp.json()); // Promise<images>
 }
 
+function updateLikesOnServer(image) {
+	return fetch(`http://localhost:3000/images/${image.id}`, {
+		method: "PATCH",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({
+			likes: image.likes
+		})
+	}).then((resp) => resp.json());
+}
+
 // RENDER FUNCTIONS
 function renderImage(image) {
 	const articleEl = document.createElement("article");
@@ -33,6 +45,12 @@ function renderImage(image) {
 	const likeBtn = document.createElement("button");
 	likeBtn.setAttribute("class", "like-button");
 	likeBtn.textContent = "♥";
+
+	likeBtn.addEventListener("click", () => {
+		image.likes++;
+		updateLikesOnServer(image);
+		render();
+	});
 
 	buttonsDiv.append(likesEl, likeBtn);
 
