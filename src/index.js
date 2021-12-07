@@ -22,6 +22,21 @@ function updateLikesOnServer(image) {
 	}).then((resp) => resp.json());
 }
 
+function createCommentOnServer(imageId, content) {
+	return fetch("http://localhost:3000/comments", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({
+			imageId: imageId,
+			content: content
+		})
+	}).then(function (resp) {
+		return resp.json();
+	});
+}
+
 // RENDER FUNCTIONS
 function renderImage(image) {
 	const articleEl = document.createElement("article");
@@ -78,6 +93,16 @@ function renderImage(image) {
 	commentBtn.textContent = "Post";
 
 	commentForm.append(commentInput, commentBtn);
+
+	commentForm.addEventListener("submit", (event) => {
+		event.preventDefault();
+		const content = commentForm.comment.value;
+		createCommentOnServer(image.id, content).then(function (commentFromServer) {
+			image.comments.push(commentFromServer);
+			render();
+			commentForm.reset();
+		});
+	});
 
 	articleEl.append(titleEl, imgEl, buttonsDiv, commentsList, commentForm);
 	imageContainerEl.append(articleEl);
