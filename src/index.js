@@ -57,7 +57,6 @@ function createImageOnServer(title, url) {
 		body: JSON.stringify({
 			title: title,
 			image: url,
-			comments: [],
 			likes: 0
 		})
 	}).then(function (resp) {
@@ -98,6 +97,7 @@ function renderForm() {
 		const title = imageForm.title.value;
 		const url = imageForm.image.value;
 		createImageOnServer(title, url).then(function (imageFromServer) {
+			imageFromServer.comments = [];
 			state.images.push(imageFromServer);
 			render();
 		});
